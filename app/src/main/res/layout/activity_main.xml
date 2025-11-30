@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Juego de Tablero (Sorteo)"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp" />
+
+    <!-- Instrucciones -->
+    <TextView
+        android:id="@+id/txtInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cada casilla es un número comprado por alguien.\nPulsa 'Sortear número' para ir sumando puntos. El número que llegue primero a 4 gana."
+        android:textSize="14sp"
+        android:paddingBottom="12dp" />
+
+    <!-- Selección tamaño del tablero -->
+    <RadioGroup
+        android:id="@+id/rgSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb4x4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4 x 4 (16)"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rb5x5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 x 5 (25)"
+            android:layout_marginStart="16dp" />
+    </RadioGroup>
+
+    <!-- Último número sorteado -->
+    <TextView
+        android:id="@+id/txtLastNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Último número sorteado: -"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp" />
+
+    <!-- Botones de acción -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnSortear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sortear número" />
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reiniciar"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Grid con los números y sus contadores -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="12dp">
+
+        <GridLayout
+            android:id="@+id/gridBoard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alignmentMode="alignMargins"
+            android:columnCount="4"
+            android:rowCount="4"
+            android:useDefaultMargins="true" />
+
+    </ScrollView>
+
+</LinearLayout>
