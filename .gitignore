@@ -2,7 +2,7 @@
 .gradle/
 local.properties
 build/
-
+local.properties
 # IntelliJ / Android Studio
 .idea/
 *.iml
