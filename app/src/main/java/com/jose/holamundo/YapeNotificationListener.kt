@@ -13,8 +13,8 @@ class YapeNotificationListener : NotificationListenerService() {
         // 👇 CAMBIA ESTA URL SEGÚN DONDE ESTÉ TU BACKEND
         // Si usas EMULADOR:  "http://10.0.2.2:8080/api/notifications"
         // Si usas CELULAR REAL (misma WiFi): "http://192.168.0.9:8080/api/notifications"
-        private const val BACKEND_URL =
-            "http://192.168.0.9:8080/api/notifications"
+        public const val BACKEND_URL =
+            "http://192.168.18.114:8080/api/notifications"
 
     }
 
