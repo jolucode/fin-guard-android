@@ -9,8 +9,8 @@ import javax.inject.Inject
  * Repository interface for notification data.
  */
 interface NotificationRepository {
-    suspend fun sendNotification(message: String): Result<Long>
-    suspend fun getNotificationLogs(): Result<List<NotificationLog>>
+    suspend fun sendNotification(message: String, deviceId: String? = null): Result<Long>
+    suspend fun getNotificationLogs(deviceId: String? = null): Result<List<NotificationLog>>
 }
 
 /**
@@ -20,12 +20,12 @@ class NotificationRepositoryImpl @Inject constructor(
     private val api: NotificationApi
 ) : NotificationRepository {
 
-    override suspend fun sendNotification(message: String): Result<Long> {
-        return api.sendNotification(message)
+    override suspend fun sendNotification(message: String, deviceId: String?): Result<Long> {
+        return api.sendNotification(message, deviceId)
     }
 
-    override suspend fun getNotificationLogs(): Result<List<NotificationLog>> {
-        return api.getNotificationLogs().map { dtoList ->
+    override suspend fun getNotificationLogs(deviceId: String?): Result<List<NotificationLog>> {
+        return api.getNotificationLogs(deviceId).map { dtoList ->
             dtoList.map { dto ->
                 NotificationLog(
                     id = dto.id,

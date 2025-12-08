@@ -1,10 +1,13 @@
 package com.jose.holamundo.presentation.dashboard
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jose.holamundo.core.config.DeviceIdentifier
 import com.jose.holamundo.data.repository.NotificationRepository
 import com.jose.holamundo.domain.model.NotificationLog
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,11 +70,15 @@ data class DashboardUiState(
  */
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val repository: NotificationRepository
+    private val repository: NotificationRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+
+    // Get the unique device ID for this installation
+    private val deviceId: String = DeviceIdentifier.getDeviceId(context)
 
     init {
         loadNotifications()
@@ -81,7 +88,8 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            val result = repository.getNotificationLogs()
+            // Filter notifications by this device's ID
+            val result = repository.getNotificationLogs(deviceId)
 
             result.fold(
                 onSuccess = { notifications ->

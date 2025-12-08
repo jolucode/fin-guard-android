@@ -9,7 +9,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NotificationRequestDto(
     @SerialName("message")
-    val message: String
+    val message: String,
+    @SerialName("deviceId")
+    val deviceId: String? = null
 )
 
 /**
@@ -26,6 +28,8 @@ data class NotificationLogDto(
     val title: String? = null,
     @SerialName("text")
     val text: String? = null,
+    @SerialName("deviceId")
+    val deviceId: String? = null,
     @SerialName("createdAt")
     val createdAt: String? = null
 )

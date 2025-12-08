@@ -16,8 +16,8 @@ import javax.inject.Inject
  * API interface for notification-related endpoints.
  */
 interface NotificationApi {
-    suspend fun sendNotification(message: String): Result<Long>
-    suspend fun getNotificationLogs(): Result<List<NotificationLogDto>>
+    suspend fun sendNotification(message: String, deviceId: String? = null): Result<Long>
+    suspend fun getNotificationLogs(deviceId: String? = null): Result<List<NotificationLogDto>>
 }
 
 /**
@@ -27,10 +27,10 @@ class NotificationApiImpl @Inject constructor(
     private val client: HttpClient
 ) : NotificationApi {
 
-    override suspend fun sendNotification(message: String): Result<Long> {
+    override suspend fun sendNotification(message: String, deviceId: String?): Result<Long> {
         return runCatching {
             val response = client.post(AppConfig.notificationsEndpoint) {
-                setBody(NotificationRequestDto(message))
+                setBody(NotificationRequestDto(message, deviceId))
             }
             if (response.status.isSuccess()) {
                 response.bodyAsText().toLongOrNull() ?: 0L
@@ -40,9 +40,14 @@ class NotificationApiImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNotificationLogs(): Result<List<NotificationLogDto>> {
+    override suspend fun getNotificationLogs(deviceId: String?): Result<List<NotificationLogDto>> {
         return runCatching {
-            client.get(AppConfig.notificationsEndpoint).body()
+            val url = if (deviceId != null) {
+                "${AppConfig.notificationsEndpoint}?deviceId=$deviceId"
+            } else {
+                AppConfig.notificationsEndpoint
+            }
+            client.get(url).body()
         }
     }
 }

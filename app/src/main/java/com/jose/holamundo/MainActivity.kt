@@ -142,7 +142,19 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendTestNotification() {
-        Log.d("YAPE_LISTENER", "Enviando notificación de prueba desde MainActivity")
+        val listenerStatus = YapeNotificationListener.isListenerConnected
+        val serviceEnabled = isNotificationServiceEnabled()
+        
+        Log.d("YAPE_LISTENER", "════════════════════════════════════════")
+        Log.d("YAPE_LISTENER", "ENVIANDO NOTIFICACIÓN DE PRUEBA")
+        Log.d("YAPE_LISTENER", "Servicio habilitado en ajustes: $serviceEnabled")
+        Log.d("YAPE_LISTENER", "Listener conectado: $listenerStatus")
+        Log.d("YAPE_LISTENER", "════════════════════════════════════════")
+
+        if (!serviceEnabled) {
+            Toast.makeText(this, "⚠️ Activa el acceso a notificaciones primero", Toast.LENGTH_LONG).show()
+            return
+        }
 
         val notification = NotificationCompat.Builder(this, testChannelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -152,7 +164,9 @@ class MainActivity : ComponentActivity() {
             .build()
 
         with(NotificationManagerCompat.from(this)) {
-            notify(1001, notification)
+            notify(System.currentTimeMillis().toInt(), notification)
         }
+        
+        Log.d("YAPE_LISTENER", "Notificación creada y enviada al sistema")
     }
 }
