@@ -15,20 +15,27 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.navigation.compose.rememberNavController
+import com.jose.holamundo.presentation.navigation.BottomNavBar
+import com.jose.holamundo.presentation.navigation.NavGraph
+import com.jose.holamundo.service.YapeNotificationListener
 import com.jose.holamundo.ui.theme.HolaMundoAndroidTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val testChannelId = "test_channel"
+
+    private var isServiceEnabled by mutableStateOf(false)
 
     private val requestNotificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
@@ -42,18 +49,30 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             HolaMundoAndroidTheme {
-                AppScreen(
-                    isServiceEnabled = isNotificationServiceEnabled(),
-                    onOpenNotificationSettings = { openNotificationSettings() },
-                    onSendTestNotification = { sendTestNotification() },
-                    onCheckStatus = { checkServiceStatus() }
-                )
+                val navController = rememberNavController()
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        BottomNavBar(navController = navController)
+                    }
+                ) { innerPadding ->
+                    NavGraph(
+                        navController = navController,
+                        innerPadding = innerPadding,
+                        isServiceEnabled = isServiceEnabled,
+                        onOpenNotificationSettings = { openNotificationSettings() },
+                        onSendTestNotification = { sendTestNotification() },
+                        onCheckStatus = { checkServiceStatus() }
+                    )
+                }
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
+        isServiceEnabled = isNotificationServiceEnabled()
         checkNotificationListenerPermission()
     }
 
@@ -76,13 +95,13 @@ class MainActivity : ComponentActivity() {
     private fun checkNotificationListenerPermission() {
         val enabled = isNotificationServiceEnabled()
 
-        Log.d("MainActivity", "🔔 Servicio habilitado: $enabled")
+        Log.d("MainActivity", "Servicio habilitado: $enabled")
 
         if (!enabled) {
-            Log.w("MainActivity", "⚠️ El servicio NO está habilitado")
-            Log.w("MainActivity", "💡 Ve a Ajustes → Acceso a notificaciones → Hola Mundo")
+            Log.w("MainActivity", "El servicio NO está habilitado")
+            Log.w("MainActivity", "Ve a Ajustes → Acceso a notificaciones → FinGuard")
         } else {
-            Log.d("MainActivity", "✅ El servicio está correctamente habilitado")
+            Log.d("MainActivity", "El servicio está correctamente habilitado")
         }
     }
 
@@ -90,7 +109,7 @@ class MainActivity : ComponentActivity() {
         val enabled = isNotificationServiceEnabled()
         Toast.makeText(
             this,
-            if (enabled) "✅ Servicio habilitado" else "❌ Servicio deshabilitado",
+            if (enabled) "Servicio habilitado" else "Servicio deshabilitado",
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -123,138 +142,17 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendTestNotification() {
-        Log.d("YAPE_LISTENER", "🚀 Enviando notificación de prueba desde MainActivity")
+        Log.d("YAPE_LISTENER", "Enviando notificación de prueba desde MainActivity")
 
         val notification = NotificationCompat.Builder(this, testChannelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Notificación de prueba")
-            .setContentText("Hola, esto es una notificación enviada desde mi app.")
+            .setContentTitle("Yape - Notificación de prueba")
+            .setContentText("Te han enviado S/ 50.00 por concepto de prueba.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
         with(NotificationManagerCompat.from(this)) {
             notify(1001, notification)
         }
-    }
-}
-
-@Composable
-fun AppScreen(
-    isServiceEnabled: Boolean,
-    onOpenNotificationSettings: () -> Unit,
-    onSendTestNotification: () -> Unit,
-    onCheckStatus: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Integración Yape - MVP", style = MaterialTheme.typography.titleLarge)
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            YapeNotificationListener.BACKEND_URL,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        // Estado del servicio
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = if (isServiceEnabled)
-                    MaterialTheme.colorScheme.primaryContainer
-                else
-                    MaterialTheme.colorScheme.errorContainer
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = if (isServiceEnabled) "✅ Servicio Activo" else "❌ Servicio Inactivo",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = if (isServiceEnabled)
-                        "Capturando notificaciones"
-                    else
-                        "Necesitas dar acceso",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        Text(
-            "1) Da acceso para leer notificaciones.\n" +
-                    "2) Envía notificación de prueba.\n" +
-                    "3) Revisa Logcat (YAPE_LISTENER).",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        // Botón principal según el estado
-        if (!isServiceEnabled) {
-            Button(
-                onClick = onOpenNotificationSettings,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Dar acceso a notificaciones")
-            }
-        } else {
-            OutlinedButton(
-                onClick = onOpenNotificationSettings,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Configurar acceso a notificaciones")
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // Botón de prueba
-        Button(
-            onClick = onSendTestNotification,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = isServiceEnabled
-        ) {
-            Text("Enviar notificación de prueba")
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // Botón verificar estado
-        OutlinedButton(
-            onClick = onCheckStatus,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Verificar estado")
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAppScreen() {
-    HolaMundoAndroidTheme {
-        AppScreen(
-            isServiceEnabled = false,
-            onOpenNotificationSettings = {},
-            onSendTestNotification = {},
-            onCheckStatus = {}
-        )
     }
 }
