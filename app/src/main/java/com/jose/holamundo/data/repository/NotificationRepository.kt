@@ -7,20 +7,22 @@ import javax.inject.Inject
 
 /**
  * Repository interface for notification data.
+ * Updated for WebFlux backend with MongoDB (uses String IDs).
  */
 interface NotificationRepository {
-    suspend fun sendNotification(message: String, deviceId: String? = null): Result<Long>
+    suspend fun sendNotification(message: String, deviceId: String? = null): Result<String>
     suspend fun getNotificationLogs(deviceId: String? = null): Result<List<NotificationLog>>
 }
 
 /**
  * Implementation of NotificationRepository.
+ * Compatible with Spring WebFlux reactive backend.
  */
 class NotificationRepositoryImpl @Inject constructor(
     private val api: NotificationApi
 ) : NotificationRepository {
 
-    override suspend fun sendNotification(message: String, deviceId: String?): Result<Long> {
+    override suspend fun sendNotification(message: String, deviceId: String?): Result<String> {
         return api.sendNotification(message, deviceId)
     }
 

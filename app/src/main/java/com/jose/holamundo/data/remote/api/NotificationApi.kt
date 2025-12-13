@@ -14,26 +14,29 @@ import javax.inject.Inject
 
 /**
  * API interface for notification-related endpoints.
+ * Updated for WebFlux backend with MongoDB (returns String ObjectId).
  */
 interface NotificationApi {
-    suspend fun sendNotification(message: String, deviceId: String? = null): Result<Long>
+    suspend fun sendNotification(message: String, deviceId: String? = null): Result<String>
     suspend fun getNotificationLogs(deviceId: String? = null): Result<List<NotificationLogDto>>
 }
 
 /**
  * Implementation of NotificationApi using Ktor.
+ * Compatible with Spring WebFlux reactive backend.
  */
 class NotificationApiImpl @Inject constructor(
     private val client: HttpClient
 ) : NotificationApi {
 
-    override suspend fun sendNotification(message: String, deviceId: String?): Result<Long> {
+    override suspend fun sendNotification(message: String, deviceId: String?): Result<String> {
         return runCatching {
             val response = client.post(AppConfig.notificationsEndpoint) {
                 setBody(NotificationRequestDto(message, deviceId))
             }
             if (response.status.isSuccess()) {
-                response.bodyAsText().toLongOrNull() ?: 0L
+                // Backend returns MongoDB ObjectId as String
+                response.bodyAsText().trim().removeSurrounding("\"")
             } else {
                 throw Exception("Error sending notification: ${response.status}")
             }

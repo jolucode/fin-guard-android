@@ -16,12 +16,13 @@ data class NotificationRequestDto(
 
 /**
  * DTO for receiving notification logs from the backend.
- * Matches the NotificationResponse DTO in Spring Boot with parsed fields.
+ * Matches the NotificationResponse DTO in Spring Boot WebFlux with MongoDB.
+ * Note: id is String (MongoDB ObjectId), createdAt is Instant format (ISO-8601 with Z)
  */
 @Serializable
 data class NotificationLogDto(
     @SerialName("id")
-    val id: Long,
+    val id: String,
     @SerialName("packageName")
     val packageName: String? = null,
     @SerialName("title")

@@ -1,17 +1,44 @@
 package com.jose.holamundo.domain.model
 
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 /**
  * Domain model representing a notification log entry.
  * Now receives parsed fields directly from backend.
+ * Note: id is String (MongoDB ObjectId), createdAt comes as Instant (ISO-8601 with Z)
  */
 data class NotificationLog(
-    val id: Long,
+    val id: String,
     val packageName: String?,
     val title: String?,
     val text: String?,
     val createdAt: String?,
     val parsedData: ParsedYapeData? = null
-)
+) {
+    /**
+     * Parses createdAt string (Instant format) to LocalDateTime.
+     * Supports both ISO_INSTANT (with Z) and ISO_LOCAL_DATE_TIME formats.
+     */
+    fun getLocalDateTime(): LocalDateTime? {
+        return createdAt?.let { dateString ->
+            try {
+                // Try parsing as Instant first (format: 2025-12-13T10:30:00Z)
+                val instant = Instant.parse(dateString)
+                LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+            } catch (e: Exception) {
+                try {
+                    // Fallback to ISO_LOCAL_DATE_TIME (format: 2025-12-13T10:30:00)
+                    LocalDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                } catch (e2: Exception) {
+                    null
+                }
+            }
+        }
+    }
+}
 
 /**
  * Parsed data from a Yape notification.
