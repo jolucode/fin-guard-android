@@ -158,7 +158,7 @@ private fun HomeContent(
 
         // Last Transaction
         item {
-            Text(
+        Text(
                 text = "Última transacción",
                 color = Color.White,
                 fontSize = 16.sp,
@@ -194,7 +194,7 @@ private fun HeaderSection(
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(4.dp))
-            Text(
+        Text(
                 text = "Centro de control de pagos",
                 color = Color.Gray,
                 fontSize = 13.sp
@@ -225,10 +225,10 @@ private fun CloudServiceCard(
     isActive: Boolean,
     isChecking: Boolean
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
+        Card(
+            modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
+            colors = CardDefaults.cardColors(
             containerColor = Color(0xFF16213E)
         )
     ) {
@@ -347,12 +347,12 @@ private fun CaptureToggleCard(
         )
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ) {
+            ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Captura de Transacciones",
@@ -364,7 +364,7 @@ private fun CaptureToggleCard(
                 Text(
                     text = if (isCaptureEnabled) 
                         "Las notificaciones de pago se guardarán automáticamente"
-                    else 
+                    else
                         "Pausado - las transacciones no se registrarán",
                     color = if (isCaptureEnabled) Color.Gray else Color(0xFFFF6B6B).copy(alpha = 0.8f),
                     fontSize = 12.sp,
@@ -423,11 +423,11 @@ private fun MetricCard(
                     color = Color.Gray,
                     fontSize = 12.sp
                 )
-            }
-            
+        }
+
             Spacer(Modifier.height(8.dp))
-            
-            Text(
+
+        Text(
                 text = value,
                 color = valueColor,
                 fontSize = 24.sp,
@@ -533,7 +533,7 @@ private fun LastTransactionCard(transaction: NotificationLog) {
 @Composable
 private fun EmptyTransactionCard() {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF16213E)

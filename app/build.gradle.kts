@@ -14,6 +14,7 @@ val appEnvironment: String by project
 val baseUrl = when (appEnvironment) {
     "emulator" -> "http://10.0.2.2:8080"      // IP del emulador -> localhost host
     "device" -> "http://192.168.18.114:8080"  // IP real de tu máquina
+    "production" -> "https://fin-guard-backend.onrender.com" // URL de producción
     else -> "http://192.168.18.114:8080"      // Default: device
 }
 

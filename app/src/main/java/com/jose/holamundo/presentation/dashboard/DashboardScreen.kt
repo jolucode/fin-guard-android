@@ -220,7 +220,7 @@ private fun DashboardContent(
                 if (uiState.searchQuery.isNotBlank()) {
                     NoSearchResultsCard(query = uiState.searchQuery)
                 } else {
-                    EmptyNotificationsCard()
+                EmptyNotificationsCard()
                 }
             }
         } else {

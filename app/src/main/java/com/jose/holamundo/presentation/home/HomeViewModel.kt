@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jose.holamundo.core.config.CapturePreferences
 import com.jose.holamundo.core.config.DeviceIdentifier
+import com.jose.holamundo.core.event.RefreshEvent
+import com.jose.holamundo.core.event.RefreshType
 import com.jose.holamundo.data.repository.NotificationRepository
 import com.jose.holamundo.domain.model.NotificationLog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,8 +62,24 @@ class HomeViewModel @Inject constructor(
             it.copy(isCaptureEnabled = CapturePreferences.isCaptureEnabled(context)) 
         }
         
+        // Listen for global refresh events
+        observeRefreshEvents()
+        
         // Check cloud service and load metrics
         checkCloudServiceAndLoadMetrics()
+    }
+    
+    /**
+     * Observes global refresh events and refreshes data when triggered.
+     */
+    private fun observeRefreshEvents() {
+        viewModelScope.launch {
+            RefreshEvent.refreshTrigger.collect { refreshType ->
+                if (refreshType == RefreshType.ALL || refreshType == RefreshType.HOME) {
+                    checkCloudServiceAndLoadMetrics()
+                }
+            }
+        }
     }
 
     /**
@@ -124,9 +142,18 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * Refreshes the data.
+     * Triggers a global refresh for all screens.
      */
     fun refresh() {
+        viewModelScope.launch {
+            RefreshEvent.triggerRefresh(RefreshType.ALL)
+        }
+    }
+    
+    /**
+     * Refreshes only this screen's data (local refresh).
+     */
+    fun refreshLocal() {
         checkCloudServiceAndLoadMetrics()
     }
 

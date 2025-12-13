@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jose.holamundo.core.config.DeviceIdentifier
+import com.jose.holamundo.core.event.RefreshEvent
+import com.jose.holamundo.core.event.RefreshType
 import com.jose.holamundo.data.repository.NotificationRepository
 import com.jose.holamundo.domain.model.NotificationLog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -147,7 +149,24 @@ class DashboardViewModel @Inject constructor(
     private val deviceId: String = DeviceIdentifier.getDeviceId(context)
 
     init {
+        // Listen for global refresh events
+        observeRefreshEvents()
+        
+        // Load initial data
         loadNotifications()
+    }
+    
+    /**
+     * Observes global refresh events and refreshes data when triggered.
+     */
+    private fun observeRefreshEvents() {
+        viewModelScope.launch {
+            RefreshEvent.refreshTrigger.collect { refreshType ->
+                if (refreshType == RefreshType.ALL || refreshType == RefreshType.DASHBOARD) {
+                    loadNotifications()
+                }
+            }
+        }
     }
 
     fun loadNotifications() {
@@ -352,7 +371,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     // ==================== PUBLIC ACTIONS ====================
-    
+
     fun refresh() {
         loadNotifications()
     }
