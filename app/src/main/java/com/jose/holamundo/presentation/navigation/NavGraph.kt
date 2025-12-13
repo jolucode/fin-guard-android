@@ -29,6 +29,7 @@ fun NavGraph(
         modifier = Modifier.padding(innerPadding)
     ) {
         composable(Screen.Home.route) {
+            // HomeViewModel is injected via hiltViewModel() inside HomeScreen
             HomeScreen(
                 isServiceEnabled = isServiceEnabled,
                 onOpenNotificationSettings = onOpenNotificationSettings,

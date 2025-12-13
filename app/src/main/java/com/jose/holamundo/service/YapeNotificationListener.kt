@@ -5,6 +5,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.jose.holamundo.core.config.AppConfig
+import com.jose.holamundo.core.config.CapturePreferences
 import com.jose.holamundo.core.config.DeviceIdentifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +79,13 @@ class YapeNotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         Log.d(TAG, ">>> onNotificationPosted llamado - isConnected: $isConnected")
+        
+        // Check if capture is enabled by user
+        val isCaptureEnabled = CapturePreferences.isCaptureEnabled(applicationContext)
+        if (!isCaptureEnabled) {
+            Log.d(TAG, ">>> Captura deshabilitada por usuario, ignorando notificación")
+            return
+        }
         
         if (sbn == null) {
             Log.d(TAG, ">>> sbn es NULL, ignorando")
